@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#000000" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <title>masahoshi ◯△☆□</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@500;700;900&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --black: #000000;
+      --yellow: #f5c400;
+      --yellow-dark: #d4a900;
+      --surface: #111111;
+      --text-muted: #888888;
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
+      --safe-top: env(safe-area-inset-top, 0px);
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html, body {
+      height: 100%;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Noto Sans JP", sans-serif;
+      background: var(--surface);
+      color: var(--black);
+      overscroll-behavior: none;
+    }
+
+    .app {
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      padding:
+        calc(12px + var(--safe-top))
+        16px
+        calc(12px + var(--safe-bottom));
+    }
+
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 12px;
+      color: var(--yellow);
+    }
+
+    .header h1 {
+      margin: 0;
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+    }
+
+    .counter {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-muted);
+      white-space: nowrap;
+    }
+
+    .stage {
+      flex: 1;
+      display: grid;
+      place-items: center;
+      min-height: 0;
+      touch-action: pan-y;
+    }
+
+    .card {
+      width: min(100%, 360px);
+      aspect-ratio: 5 / 7;
+      max-height: calc(100dvh - 180px);
+      border-radius: 18px;
+      overflow: hidden;
+      box-shadow:
+        0 24px 48px rgba(0, 0, 0, 0.45),
+        0 0 0 1px rgba(245, 196, 0, 0.15);
+      display: flex;
+      flex-direction: column;
+      user-select: none;
+    }
+
+    .choices {
+      flex: 1.55;
+      background: var(--black);
+      display: grid;
+      grid-template-rows: repeat(4, 1fr);
+    }
+
+    .choice-row {
+      display: grid;
+      grid-template-columns: 56px 1fr;
+      align-items: center;
+      gap: 8px;
+      padding: 0 18px 0 14px;
+      border-bottom: 2px solid var(--yellow);
+      min-height: 0;
+    }
+
+    .choice-row:last-child {
+      border-bottom: 0;
+    }
+
+    .symbol {
+      display: grid;
+      place-items: center;
+      font-size: clamp(28px, 8vw, 36px);
+      font-weight: 900;
+      color: var(--yellow);
+      line-height: 1;
+    }
+
+    .choice-text {
+      font-size: clamp(18px, 5.2vw, 24px);
+      font-weight: 700;
+      color: var(--yellow);
+      line-height: 1.25;
+      word-break: break-all;
+    }
+
+    .qa {
+      flex: 1;
+      background: var(--yellow);
+      display: grid;
+      grid-template-rows: 1fr 1fr;
+    }
+
+    .qa-row {
+      display: grid;
+      grid-template-columns: 42px 1fr;
+      align-items: center;
+      gap: 10px;
+      padding: 0 16px;
+      border-bottom: 2px solid var(--black);
+      min-height: 0;
+    }
+
+    .qa-row:last-child {
+      border-bottom: 0;
+    }
+
+    .qa-label {
+      font-size: clamp(28px, 8vw, 36px);
+      font-weight: 900;
+      line-height: 1;
+    }
+
+    .qa-text {
+      font-size: clamp(16px, 4.5vw, 20px);
+      font-weight: 700;
+      line-height: 1.35;
+    }
+
+    .qa-row.answer.hidden .qa-text {
+      filter: blur(8px);
+      opacity: 0.35;
+    }
+
+    .controls {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .btn {
+      appearance: none;
+      border: 0;
+      border-radius: 14px;
+      padding: 14px 10px;
+      font: inherit;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.12s ease, opacity 0.12s ease;
+    }
+
+    .btn:active {
+      transform: scale(0.97);
+    }
+
+    .btn:disabled {
+      opacity: 0.35;
+      cursor: not-allowed;
+    }
+
+    .btn-nav {
+      background: #222;
+      color: var(--yellow);
+      border: 1px solid #333;
+    }
+
+    .btn-primary {
+      background: var(--yellow);
+      color: var(--black);
+    }
+
+    .btn-toggle {
+      grid-column: 1 / -1;
+      background: transparent;
+      color: var(--text-muted);
+      border: 1px solid #333;
+      padding: 12px;
+      font-size: 13px;
+    }
+
+    .status {
+      margin-top: 10px;
+      text-align: center;
+      font-size: 12px;
+      color: var(--text-muted);
+      min-height: 18px;
+    }
+
+    .loading,
+    .error-panel {
+      width: min(100%, 360px);
+      aspect-ratio: 5 / 7;
+      border-radius: 18px;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+      text-align: center;
+      color: var(--yellow);
+      background: #1a1a1a;
+      border: 1px dashed #444;
+    }
+
+    .error-panel p {
+      margin: 0 0 12px;
+      font-size: 14px;
+      line-height: 1.6;
+      color: #ccc;
+    }
+
+    .error-panel code {
+      display: block;
+      margin-top: 8px;
+      font-size: 11px;
+      color: var(--text-muted);
+      word-break: break-all;
+    }
+
+    @media (min-width: 420px) {
+      .app {
+        padding-inline: 24px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header class="header">
+      <h1>masahoshi ◯△☆□</h1>
+      <div class="counter" id="counter">-- / --</div>
+    </header>
+
+    <main class="stage" id="stage">
+      <div class="loading" id="loading">問題を読み込み中…</div>
+    </main>
+
+    <div class="controls">
+      <button class="btn btn-nav" id="prevBtn" type="button" disabled>← 前</button>
+      <button class="btn btn-primary" id="shuffleBtn" type="button" disabled>🔀 再配置</button>
+      <button class="btn btn-nav" id="nextBtn" type="button" disabled>次 →</button>
+      <button class="btn btn-toggle" id="toggleAnswerBtn" type="button" disabled>答えを隠す</button>
+    </div>
+
+    <p class="status" id="status"></p>
+  </div>
+
+  <script>
+    const SHEET_ID = "1xFpRa3bgWPabH5dVZynlX19tFLnohjE15YcZs3jOqGQ";
+    const SHEET_GID = "0";
+    const CSV_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=${SHEET_GID}`;
+
+    const SYMBOLS = [
+      { symbol: "◯", key: "maru" },
+      { symbol: "△", key: "sankaku" },
+      { symbol: "☆", key: "hoshi" },
+      { symbol: "□", key: "shikaku" },
+    ];
+
+    const QUESTION_KEYS = ["問題", "問題文"];
+    const ANSWER_KEYS = ["回答", "答え"];
+    const CHOICE_KEYS = ["選択肢1", "選択肢2", "選択肢3", "選択肢4"];
+
+    const stage = document.getElementById("stage");
+    const counter = document.getElementById("counter");
+    const status = document.getElementById("status");
+    const prevBtn = document.getElementById("prevBtn");
+    const nextBtn = document.getElementById("nextBtn");
+    const shuffleBtn = document.getElementById("shuffleBtn");
+    const toggleAnswerBtn = document.getElementById("toggleAnswerBtn");
+
+    let cards = [];
+    let currentIndex = 0;
+    let answerHidden = false;
+    let currentLayout = [];
+    let touchStartX = 0;
+
+    function parseCsv(text) {
+      const rows = [];
+      let row = [];
+      let cell = "";
+      let inQuotes = false;
+
+      for (let i = 0; i < text.length; i += 1) {
+        const ch = text[i];
+        const next = text[i + 1];
+
+        if (inQuotes) {
+          if (ch === '"' && next === '"') {
+            cell += '"';
+            i += 1;
+          } else if (ch === '"') {
+            inQuotes = false;
+          } else {
+            cell += ch;
+          }
+          continue;
+        }
+
+        if (ch === '"') {
+          inQuotes = true;
+        } else if (ch === ",") {
+          row.push(cell);
+          cell = "";
+        } else if (ch === "\n") {
+          row.push(cell);
+          rows.push(row);
+          row = [];
+          cell = "";
+        } else if (ch === "\r") {
+          // ignore
+        } else {
+          cell += ch;
+        }
+      }
+
+      if (cell.length > 0 || row.length > 0) {
+        row.push(cell);
+        rows.push(row);
+      }
+
+      return rows;
+    }
+
+    function normalizeHeader(value) {
+      return String(value || "").trim();
+    }
+
+    function pickValue(record, keys) {
+      for (const key of keys) {
+        if (record[key] != null && String(record[key]).trim() !== "") {
+          return String(record[key]).trim();
+        }
+      }
+      return "";
+    }
+
+    function rowsToCards(rows) {
+      if (rows.length < 2) return [];
+
+      const headers = rows[0].map(normalizeHeader);
+      const records = rows.slice(1).map((cells) => {
+        const record = {};
+        headers.forEach((header, index) => {
+          record[header] = (cells[index] ?? "").trim();
+        });
+        return record;
+      });
+
+      return records
+        .map((record) => ({
+          question: pickValue(record, QUESTION_KEYS),
+          answer: pickValue(record, ANSWER_KEYS),
+          choices: CHOICE_KEYS.map((key) => record[key] ?? "").map((v) => v.trim()),
+        }))
+        .filter((card) => card.question || card.choices.some(Boolean));
+    }
+
+    function shuffle(array) {
+      const copy = [...array];
+      for (let i = copy.length - 1; i > 0; i -= 1) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [copy[i], copy[j]] = [copy[j], copy[i]];
+      }
+      return copy;
+    }
+
+    function buildLayout(choices) {
+      const shuffledChoices = shuffle(choices);
+      return SYMBOLS.map((symbol, index) => ({
+        symbol: symbol.symbol,
+        text: shuffledChoices[index] || "—",
+      }));
+    }
+
+    function renderCard() {
+      if (!cards.length) return;
+
+      const card = cards[currentIndex];
+      currentLayout = buildLayout(card.choices);
+
+      counter.textContent = `${currentIndex + 1} / ${cards.length}`;
+      prevBtn.disabled = currentIndex === 0;
+      nextBtn.disabled = currentIndex === cards.length - 1;
+
+      stage.innerHTML = `
+        <article class="card" aria-label="masahoshiカード">
+          <div class="choices">
+            ${currentLayout
+              .map(
+                (item) => `
+              <div class="choice-row">
+                <div class="symbol" aria-hidden="true">${item.symbol}</div>
+                <div class="choice-text">${escapeHtml(item.text)}</div>
+              </div>
+            `
+              )
+              .join("")}
+          </div>
+          <div class="qa">
+            <div class="qa-row question">
+              <div class="qa-label">Q</div>
+              <div class="qa-text">${escapeHtml(card.question)}</div>
+            </div>
+            <div class="qa-row answer${answerHidden ? " hidden" : ""}">
+              <div class="qa-label">A</div>
+              <div class="qa-text">${escapeHtml(card.answer || "（未設定）")}</div>
+            </div>
+          </div>
+        </article>
+      `;
+    }
+
+    function escapeHtml(text) {
+      return String(text)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;");
+    }
+
+    function showError(message) {
+      stage.innerHTML = `
+        <div class="error-panel">
+          <p>${escapeHtml(message)}</p>
+          <code>${CSV_URL}</code>
+        </div>
+      `;
+      status.textContent = "スプレッドシートの共有設定を確認してください";
+    }
+
+    async function loadCards() {
+      status.textContent = "スプレッドシートから取得中…";
+
+      try {
+        const response = await fetch(CSV_URL);
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}`);
+        }
+
+        const csv = await response.text();
+        cards = rowsToCards(parseCsv(csv));
+
+        if (!cards.length) {
+          throw new Error("有効な問題が見つかりませんでした");
+        }
+
+        currentIndex = Math.floor(Math.random() * cards.length);
+        shuffleBtn.disabled = false;
+        toggleAnswerBtn.disabled = false;
+        prevBtn.disabled = false;
+        nextBtn.disabled = false;
+        status.textContent = `${cards.length} 問読み込み完了`;
+        renderCard();
+      } catch (error) {
+        showError("問題の読み込みに失敗しました。スプレッドシートを「リンクを知っている全員が閲覧可」にしてください。");
+        console.error(error);
+      }
+    }
+
+    function goPrev() {
+      if (currentIndex > 0) {
+        currentIndex -= 1;
+        renderCard();
+      }
+    }
+
+    function goNext() {
+      if (currentIndex < cards.length - 1) {
+        currentIndex += 1;
+        renderCard();
+      }
+    }
+
+    function reshuffleLayout() {
+      if (!cards.length) return;
+      currentLayout = buildLayout(cards[currentIndex].choices);
+      renderCard();
+    }
+
+    function toggleAnswer() {
+      answerHidden = !answerHidden;
+      toggleAnswerBtn.textContent = answerHidden ? "答えを表示" : "答えを隠す";
+      renderCard();
+    }
+
+    prevBtn.addEventListener("click", goPrev);
+    nextBtn.addEventListener("click", goNext);
+    shuffleBtn.addEventListener("click", reshuffleLayout);
+    toggleAnswerBtn.addEventListener("click", toggleAnswer);
+
+    stage.addEventListener("touchstart", (event) => {
+      touchStartX = event.changedTouches[0].clientX;
+    }, { passive: true });
+
+    stage.addEventListener("touchend", (event) => {
+      const deltaX = event.changedTouches[0].clientX - touchStartX;
+      if (Math.abs(deltaX) < 48) return;
+      if (deltaX < 0) goNext();
+      else goPrev();
+    }, { passive: true });
+
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "ArrowRight") goNext();
+      if (event.key === "ArrowLeft") goPrev();
+      if (event.key === " ") {
+        event.preventDefault();
+        reshuffleLayout();
+      }
+    });
+
+    loadCards();
+  </script>
+</body>
+</html>

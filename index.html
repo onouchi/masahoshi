@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#000000" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <title>masahoshi ◯△☆□</title>
+  <title>masahoshi ●▲★■</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@500;700;900&display=swap" rel="stylesheet" />
@@ -14,24 +14,19 @@
     :root {
       --black: #000000;
       --yellow: #f5c400;
-      --yellow-dark: #d4a900;
-      --surface: #111111;
-      --text-muted: #888888;
+      --surface: #000000;
+      --text-muted: #666666;
       --safe-bottom: env(safe-area-inset-bottom, 0px);
       --safe-top: env(safe-area-inset-top, 0px);
     }
 
-    * {
-      box-sizing: border-box;
-      -webkit-tap-highlight-color: transparent;
-    }
-
-    html, body {
-      height: 100%;
-    }
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    html, body { height: 100%; overflow: hidden; }
 
     body {
       margin: 0;
+      display: flex;
+      justify-content: center;
       font-family: "Noto Sans JP", sans-serif;
       background: var(--surface);
       color: var(--black);
@@ -39,58 +34,110 @@
     }
 
     .app {
-      min-height: 100dvh;
+      width: 100%;
+      max-width: 768px;
+      height: 100dvh;
       display: flex;
       flex-direction: column;
-      padding:
-        calc(12px + var(--safe-top))
-        16px
-        calc(12px + var(--safe-bottom));
+      padding-top: var(--safe-top);
     }
 
     .header {
+      flex-shrink: 0;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 12px;
-      margin-bottom: 12px;
+      gap: 8px;
+      padding: 8px 12px 4px;
       color: var(--yellow);
     }
 
     .header h1 {
       margin: 0;
-      font-size: 15px;
+      font-size: 13px;
       font-weight: 700;
-      letter-spacing: 0.04em;
+      letter-spacing: 0.02em;
     }
 
     .counter {
-      font-size: 13px;
+      font-size: 12px;
       font-weight: 700;
       color: var(--text-muted);
-      white-space: nowrap;
+      font-variant-numeric: tabular-nums;
     }
 
     .stage {
       flex: 1;
-      display: grid;
-      place-items: center;
       min-height: 0;
-      touch-action: pan-y;
+      padding: 4px 8px 8px;
+      position: relative;
+      overflow: hidden;
+      touch-action: none;
+    }
+
+    .card-stack {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      perspective: 1200px;
     }
 
     .card {
-      width: min(100%, 360px);
-      aspect-ratio: 5 / 7;
-      max-height: calc(100dvh - 180px);
-      border-radius: 18px;
+      position: absolute;
+      inset: 0;
+      border-radius: 16px;
       overflow: hidden;
-      box-shadow:
-        0 24px 48px rgba(0, 0, 0, 0.45),
-        0 0 0 1px rgba(245, 196, 0, 0.15);
       display: flex;
       flex-direction: column;
       user-select: none;
+      border: 3px solid var(--yellow);
+      box-shadow:
+        0 10px 24px rgba(0, 0, 0, 0.55),
+        0 4px 0 #b89200,
+        inset 0 1px 0 rgba(255, 255, 255, 0.12);
+      will-change: transform;
+      transform-origin: center center;
+      cursor: grab;
+      touch-action: none;
+    }
+
+    .card:active { cursor: grabbing; }
+
+    .card--under {
+      cursor: default;
+      pointer-events: none;
+    }
+
+    .card--busy { pointer-events: none; }
+
+    .swipe-stamp {
+      position: absolute;
+      top: 18%;
+      z-index: 5;
+      padding: 8px 14px;
+      border: 4px solid;
+      border-radius: 10px;
+      font-size: clamp(22px, 6vw, 32px);
+      font-weight: 900;
+      letter-spacing: 0.08em;
+      line-height: 1;
+      opacity: 0;
+      pointer-events: none;
+      transform: rotate(-18deg);
+    }
+
+    .swipe-stamp--next {
+      left: 14%;
+      color: #3ddc84;
+      border-color: #3ddc84;
+      transform: rotate(-18deg);
+    }
+
+    .swipe-stamp--back {
+      right: 14%;
+      color: #ff4d4d;
+      border-color: #ff4d4d;
+      transform: rotate(18deg);
     }
 
     .choices {
@@ -98,36 +145,35 @@
       background: var(--black);
       display: grid;
       grid-template-rows: repeat(4, 1fr);
+      min-height: 0;
     }
 
     .choice-row {
       display: grid;
-      grid-template-columns: 56px 1fr;
+      grid-template-columns: 52px 1fr;
       align-items: center;
-      gap: 8px;
-      padding: 0 18px 0 14px;
+      gap: 4px;
+      padding: 0 12px 0 10px;
       border-bottom: 2px solid var(--yellow);
       min-height: 0;
     }
 
-    .choice-row:last-child {
-      border-bottom: 0;
-    }
+    .choice-row:last-child { border-bottom: 0; }
 
     .symbol {
       display: grid;
       place-items: center;
-      font-size: clamp(28px, 8vw, 36px);
+      font-size: clamp(26px, 7.5vw, 34px);
       font-weight: 900;
       color: var(--yellow);
       line-height: 1;
     }
 
     .choice-text {
-      font-size: clamp(18px, 5.2vw, 24px);
+      font-size: clamp(17px, 4.8vw, 22px);
       font-weight: 700;
       color: var(--yellow);
-      line-height: 1.25;
+      line-height: 1.2;
       word-break: break-all;
     }
 
@@ -136,108 +182,106 @@
       background: var(--yellow);
       display: grid;
       grid-template-rows: 1fr 1fr;
+      min-height: 0;
     }
 
     .qa-row {
       display: grid;
-      grid-template-columns: 42px 1fr;
+      grid-template-columns: 36px 1fr;
       align-items: center;
-      gap: 10px;
-      padding: 0 16px;
+      gap: 8px;
+      padding: 0 12px;
       border-bottom: 2px solid var(--black);
       min-height: 0;
     }
 
-    .qa-row:last-child {
-      border-bottom: 0;
-    }
+    .qa-row:last-child { border-bottom: 0; }
 
     .qa-label {
-      font-size: clamp(28px, 8vw, 36px);
+      font-size: clamp(26px, 7.5vw, 34px);
       font-weight: 900;
       line-height: 1;
     }
 
     .qa-text {
-      font-size: clamp(16px, 4.5vw, 20px);
+      font-size: clamp(15px, 4.2vw, 19px);
       font-weight: 700;
-      line-height: 1.35;
+      line-height: 1.3;
     }
 
-    .qa-row.answer.hidden .qa-text {
-      filter: blur(8px);
-      opacity: 0.35;
-    }
-
-    .controls {
+    .nav {
+      flex-shrink: 0;
       display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
+      grid-template-columns: 1fr 1.4fr;
       gap: 10px;
-      margin-top: 16px;
+      padding: 10px 12px calc(12px + var(--safe-bottom));
+      background: var(--surface);
     }
 
-    .btn {
+    .btn-nav,
+    .btn-next {
       appearance: none;
       border: 0;
-      border-radius: 14px;
-      padding: 14px 10px;
+      width: 100%;
+      min-height: 64px;
+      padding: 16px;
       font: inherit;
-      font-size: 14px;
-      font-weight: 700;
+      font-size: 20px;
+      font-weight: 900;
+      letter-spacing: 0.04em;
       cursor: pointer;
-      transition: transform 0.12s ease, opacity 0.12s ease;
-    }
-
-    .btn:active {
-      transform: scale(0.97);
-    }
-
-    .btn:disabled {
-      opacity: 0.35;
-      cursor: not-allowed;
+      border-radius: 16px;
+      transition: transform 0.1s ease, box-shadow 0.1s ease, opacity 0.1s ease;
     }
 
     .btn-nav {
-      background: #222;
+      background: #1a1a1a;
       color: var(--yellow);
       border: 1px solid #333;
+      box-shadow: 0 4px 0 #0a0a0a;
     }
 
-    .btn-primary {
+    .btn-nav:active:not(:disabled) {
+      transform: translateY(3px);
+      box-shadow: 0 1px 0 #0a0a0a;
+    }
+
+    .btn-nav:disabled {
+      opacity: 0.35;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+
+    .btn-next {
       background: var(--yellow);
       color: var(--black);
+      box-shadow: 0 5px 0 #b89200;
     }
 
-    .btn-toggle {
-      grid-column: 1 / -1;
-      background: transparent;
-      color: var(--text-muted);
-      border: 1px solid #333;
-      padding: 12px;
-      font-size: 13px;
+    .btn-next:active:not(:disabled) {
+      transform: translateY(3px);
+      box-shadow: 0 2px 0 #b89200;
     }
 
-    .status {
-      margin-top: 10px;
-      text-align: center;
-      font-size: 12px;
-      color: var(--text-muted);
-      min-height: 18px;
+    .btn-next:disabled {
+      opacity: 0.35;
+      cursor: not-allowed;
+      box-shadow: none;
     }
 
-    .loading,
-    .error-panel {
-      width: min(100%, 360px);
-      aspect-ratio: 5 / 7;
-      border-radius: 18px;
+    .loading, .error-panel {
+      height: 100%;
+      border-radius: 16px;
       display: grid;
       place-items: center;
       padding: 24px;
       text-align: center;
       color: var(--yellow);
-      background: #1a1a1a;
-      border: 1px dashed #444;
+      background: #111;
+      border: 1px dashed #333;
     }
+
+    .loading { font-size: 14px; font-weight: 700; }
 
     .error-panel p {
       margin: 0 0 12px;
@@ -246,200 +290,195 @@
       color: #ccc;
     }
 
-    .error-panel code {
-      display: block;
-      margin-top: 8px;
-      font-size: 11px;
-      color: var(--text-muted);
-      word-break: break-all;
+    .overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 20;
+      background: rgba(0, 0, 0, 0.92);
+      display: grid;
+      place-items: center;
+      padding: calc(16px + var(--safe-top)) 16px calc(16px + var(--safe-bottom));
     }
 
-    @media (min-width: 420px) {
-      .app {
-        padding-inline: 24px;
-      }
+    .setup {
+      width: min(100%, 420px);
+      background: #111;
+      border: 2px solid var(--yellow);
+      border-radius: 18px;
+      padding: 20px 16px;
+      color: #fff;
     }
+
+    .setup h2 {
+      margin: 0 0 8px;
+      font-size: 18px;
+      color: var(--yellow);
+    }
+
+    .setup p {
+      margin: 0 0 16px;
+      font-size: 13px;
+      line-height: 1.5;
+      color: #aaa;
+    }
+
+    .user-list {
+      display: grid;
+      gap: 8px;
+      max-height: 42dvh;
+      overflow: auto;
+      margin-bottom: 16px;
+    }
+
+    .user-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px;
+      border-radius: 12px;
+      background: #1a1a1a;
+      border: 1px solid #2a2a2a;
+      font-size: 16px;
+      font-weight: 700;
+    }
+
+    .user-item input {
+      width: 20px;
+      height: 20px;
+      accent-color: var(--yellow);
+    }
+
+    .setup-actions {
+      display: grid;
+      gap: 10px;
+    }
+
+    .btn-primary, .btn-secondary {
+      appearance: none;
+      border: 0;
+      border-radius: 14px;
+      min-height: 52px;
+      font: inherit;
+      font-size: 16px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .btn-primary {
+      background: var(--yellow);
+      color: var(--black);
+    }
+
+    .btn-secondary {
+      background: transparent;
+      color: var(--text-muted);
+      border: 1px solid #333;
+    }
+
+    .setup-meta {
+      margin: 16px 0 20px;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--yellow);
+      text-align: center;
+      min-height: 20px;
+    }
+
+    .hidden { display: none !important; }
   </style>
 </head>
 <body>
   <div class="app">
     <header class="header">
-      <h1>masahoshi ◯△☆□</h1>
+      <h1>masahoshi ●▲★■</h1>
       <div class="counter" id="counter">-- / --</div>
     </header>
 
     <main class="stage" id="stage">
-      <div class="loading" id="loading">問題を読み込み中…</div>
+      <div class="loading">準備中…</div>
     </main>
 
-    <div class="controls">
-      <button class="btn btn-nav" id="prevBtn" type="button" disabled>← 前</button>
-      <button class="btn btn-primary" id="shuffleBtn" type="button" disabled>🔀 再配置</button>
-      <button class="btn btn-nav" id="nextBtn" type="button" disabled>次 →</button>
-      <button class="btn btn-toggle" id="toggleAnswerBtn" type="button" disabled>答えを隠す</button>
-    </div>
-
-    <p class="status" id="status"></p>
+    <nav class="nav" aria-label="問題ナビ">
+      <button class="btn-nav" id="prevBtn" type="button" disabled>← 戻る</button>
+      <button class="btn-next" id="nextBtn" type="button" disabled>次へ →</button>
+    </nav>
   </div>
 
+  <div class="overlay" id="setupOverlay">
+    <div class="setup">
+      <h2>誰の問題を使いますか？</h2>
+      <p>チェックを外した人の制作した問題は使いません。</p>
+      <div class="user-list" id="userList"></div>
+      <p class="setup-meta" id="setupMeta"></p>
+      <div class="setup-actions">
+        <button class="btn-primary" id="startBtn" type="button">開始</button>
+        <button class="btn-secondary" id="selectAllBtn" type="button">全員選択</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
+  <script src="config.js"></script>
+  <script src="shared.js"></script>
   <script>
-    const SHEET_ID = "1xFpRa3bgWPabH5dVZynlX19tFLnohjE15YcZs3jOqGQ";
-    const SHEET_GID = "0";
-    const CSV_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=${SHEET_GID}`;
-
-    const SYMBOLS = [
-      { symbol: "◯", key: "maru" },
-      { symbol: "△", key: "sankaku" },
-      { symbol: "☆", key: "hoshi" },
-      { symbol: "□", key: "shikaku" },
-    ];
-
-    const QUESTION_KEYS = ["問題", "問題文"];
-    const ANSWER_KEYS = ["回答", "答え"];
-    const CHOICE_KEYS = ["選択肢1", "選択肢2", "選択肢3", "選択肢4"];
+    const SYMBOLS = ["●", "▲", "★", "■"];
+    const STORAGE_KEY = "shikakuichi-included-users";
+    const SWIPE_THRESHOLD = 170;
+    const SWIPE_VELOCITY = 0.65;
 
     const stage = document.getElementById("stage");
     const counter = document.getElementById("counter");
-    const status = document.getElementById("status");
     const prevBtn = document.getElementById("prevBtn");
     const nextBtn = document.getElementById("nextBtn");
-    const shuffleBtn = document.getElementById("shuffleBtn");
-    const toggleAnswerBtn = document.getElementById("toggleAnswerBtn");
+    const setupOverlay = document.getElementById("setupOverlay");
+    const userList = document.getElementById("userList");
+    const startBtn = document.getElementById("startBtn");
+    const selectAllBtn = document.getElementById("selectAllBtn");
+    const setupMeta = document.getElementById("setupMeta");
 
+    let allQuestions = [];
+    let users = [];
     let cards = [];
-    let currentIndex = 0;
-    let answerHidden = false;
-    let currentLayout = [];
-    let touchStartX = 0;
-
-    function parseCsv(text) {
-      const rows = [];
-      let row = [];
-      let cell = "";
-      let inQuotes = false;
-
-      for (let i = 0; i < text.length; i += 1) {
-        const ch = text[i];
-        const next = text[i + 1];
-
-        if (inQuotes) {
-          if (ch === '"' && next === '"') {
-            cell += '"';
-            i += 1;
-          } else if (ch === '"') {
-            inQuotes = false;
-          } else {
-            cell += ch;
-          }
-          continue;
-        }
-
-        if (ch === '"') {
-          inQuotes = true;
-        } else if (ch === ",") {
-          row.push(cell);
-          cell = "";
-        } else if (ch === "\n") {
-          row.push(cell);
-          rows.push(row);
-          row = [];
-          cell = "";
-        } else if (ch === "\r") {
-          // ignore
-        } else {
-          cell += ch;
-        }
-      }
-
-      if (cell.length > 0 || row.length > 0) {
-        row.push(cell);
-        rows.push(row);
-      }
-
-      return rows;
-    }
-
-    function normalizeHeader(value) {
-      return String(value || "").trim();
-    }
-
-    function pickValue(record, keys) {
-      for (const key of keys) {
-        if (record[key] != null && String(record[key]).trim() !== "") {
-          return String(record[key]).trim();
-        }
-      }
-      return "";
-    }
-
-    function rowsToCards(rows) {
-      if (rows.length < 2) return [];
-
-      const headers = rows[0].map(normalizeHeader);
-      const records = rows.slice(1).map((cells) => {
-        const record = {};
-        headers.forEach((header, index) => {
-          record[header] = (cells[index] ?? "").trim();
-        });
-        return record;
-      });
-
-      return records
-        .map((record) => ({
-          question: pickValue(record, QUESTION_KEYS),
-          answer: pickValue(record, ANSWER_KEYS),
-          choices: CHOICE_KEYS.map((key) => record[key] ?? "").map((v) => v.trim()),
-        }))
-        .filter((card) => card.question || card.choices.some(Boolean));
-    }
-
-    function shuffle(array) {
-      const copy = [...array];
-      for (let i = copy.length - 1; i > 0; i -= 1) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [copy[i], copy[j]] = [copy[j], copy[i]];
-      }
-      return copy;
-    }
+    let deck = [];
+    let deckIndex = 0;
+    let includedUsers = new Set();
+    let questionsPrefetchPromise = null;
+    let animating = false;
+    let dragState = null;
 
     function buildLayout(choices) {
       const shuffledChoices = shuffle(choices);
       return SYMBOLS.map((symbol, index) => ({
-        symbol: symbol.symbol,
+        symbol,
         text: shuffledChoices[index] || "—",
       }));
     }
 
-    function renderCard() {
-      if (!cards.length) return;
+    function initDeck() {
+      deck = shuffle(cards.map((_, index) => index));
+      deckIndex = 0;
+    }
 
-      const card = cards[currentIndex];
-      currentLayout = buildLayout(card.choices);
-
-      counter.textContent = `${currentIndex + 1} / ${cards.length}`;
-      prevBtn.disabled = currentIndex === 0;
-      nextBtn.disabled = currentIndex === cards.length - 1;
-
-      stage.innerHTML = `
-        <article class="card" aria-label="masahoshiカード">
+    function cardMarkup(card, extraClass = "") {
+      const layout = buildLayout(card.choices);
+      return `
+        <article class="card ${extraClass}" aria-label="問題カード">
+          <div class="swipe-stamp swipe-stamp--back">戻る</div>
+          <div class="swipe-stamp swipe-stamp--next">次へ</div>
           <div class="choices">
-            ${currentLayout
-              .map(
-                (item) => `
+            ${layout.map((item) => `
               <div class="choice-row">
                 <div class="symbol" aria-hidden="true">${item.symbol}</div>
                 <div class="choice-text">${escapeHtml(item.text)}</div>
               </div>
-            `
-              )
-              .join("")}
+            `).join("")}
           </div>
           <div class="qa">
             <div class="qa-row question">
               <div class="qa-label">Q</div>
               <div class="qa-text">${escapeHtml(card.question)}</div>
             </div>
-            <div class="qa-row answer${answerHidden ? " hidden" : ""}">
+            <div class="qa-row answer">
               <div class="qa-label">A</div>
               <div class="qa-text">${escapeHtml(card.answer || "（未設定）")}</div>
             </div>
@@ -448,105 +487,433 @@
       `;
     }
 
-    function escapeHtml(text) {
-      return String(text)
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;");
+    function getCardAt(index) {
+      if (index < 0 || index >= deck.length) return null;
+      return cards[deck[index]];
+    }
+
+    function createCardEl(card, extraClass = "") {
+      const template = document.createElement("template");
+      template.innerHTML = cardMarkup(card, extraClass).trim();
+      return template.content.firstElementChild;
+    }
+
+    function getStack() {
+      return stage.querySelector(".card-stack");
+    }
+
+    function updateNav() {
+      counter.textContent = `${deckIndex + 1} / ${cards.length}`;
+      prevBtn.disabled = deckIndex === 0 || animating;
+      nextBtn.disabled = !cards.length || animating;
+    }
+
+    function renderCard() {
+      if (!cards.length) return;
+
+      updateNav();
+      const current = getCardAt(deckIndex);
+      const next = getCardAt(deckIndex + 1);
+
+      stage.innerHTML = `
+        <div class="card-stack">
+          ${next ? cardMarkup(next, "card--under") : ""}
+          ${cardMarkup(current, "card--current")}
+        </div>
+      `;
+
+      const under = stage.querySelector(".card--under");
+      if (under) gsap.set(under, { scale: 0.96, y: 8, opacity: 0.88 });
+      const currentEl = stage.querySelector(".card--current");
+      gsap.set(currentEl, { x: 0, y: 0, rotation: 1, rotation: 0, opacity: 1 });
+      bindDrag(currentEl);
+    }
+
+    function prepareUnderForDirection(direction) {
+      const stack = getStack();
+      if (!stack) return null;
+
+      // 右(+1)=次へ → 既存の下カード（次の問題）を使う
+      if (direction > 0) {
+        return stack.querySelector(".card--under");
+      }
+
+      // 左(-1)=戻る → 下カードを前の問題に差し替え
+      stack.querySelectorAll(".card--under").forEach((el) => el.remove());
+      const prev = getCardAt(deckIndex - 1);
+      if (!prev) return null;
+
+      const under = createCardEl(prev, "card--under");
+      const current = stack.querySelector(".card--current");
+      stack.insertBefore(under, current);
+      gsap.set(under, { scale: 0.96, y: 8, opacity: 0.88 });
+      return under;
+    }
+
+    function promoteUnder(flownEl) {
+      const stack = flownEl.parentElement;
+      gsap.killTweensOf(flownEl);
+      flownEl.remove();
+
+      let current = stack?.querySelector(".card--under");
+      if (current) {
+        current.classList.remove("card--under");
+        current.classList.add("card--current");
+        gsap.set(current, { x: 0, y: 0, scale: 1, rotation: 0, opacity: 1 });
+      } else if (stack) {
+        current = createCardEl(getCardAt(deckIndex), "card--current");
+        stack.appendChild(current);
+        gsap.set(current, { x: 0, y: 0, scale: 1, rotation: 0, opacity: 1 });
+      }
+
+      stack?.querySelectorAll(".card--under").forEach((el) => el.remove());
+
+      const next = getCardAt(deckIndex + 1);
+      if (next && stack && current) {
+        const under = createCardEl(next, "card--under");
+        stack.insertBefore(under, current);
+        gsap.set(under, { scale: 0.96, y: 8, opacity: 0.88 });
+      }
+
+      if (current) bindDrag(current);
+      animating = false;
+      updateNav();
+    }
+
+    function setStampOpacity(cardEl, dx) {
+      const nextStamp = cardEl.querySelector(".swipe-stamp--next");
+      const backStamp = cardEl.querySelector(".swipe-stamp--back");
+      const progress = Math.min(Math.abs(dx) / SWIPE_THRESHOLD, 1);
+      if (dx > 0) {
+        gsap.set(nextStamp, { opacity: progress });
+        gsap.set(backStamp, { opacity: 0 });
+      } else if (dx < 0) {
+        gsap.set(backStamp, { opacity: deckIndex === 0 ? 0 : progress });
+        gsap.set(nextStamp, { opacity: 0 });
+      } else {
+        gsap.set([nextStamp, backStamp], { opacity: 0 });
+      }
+    }
+
+    function bindDrag(cardEl) {
+      if (!cardEl || cardEl.dataset.dragBound === "1") return;
+      cardEl.dataset.dragBound = "1";
+
+      const onPointerDown = (event) => {
+        if (animating || event.button > 0) return;
+        dragState = {
+          pointerId: event.pointerId,
+          startX: event.clientX,
+          startY: event.clientY,
+          lastX: event.clientX,
+          lastT: performance.now(),
+          velocityX: 0,
+        };
+        cardEl.setPointerCapture(event.pointerId);
+        gsap.killTweensOf(cardEl);
+      };
+
+      const onPointerMove = (event) => {
+        if (!dragState || event.pointerId !== dragState.pointerId) return;
+        const now = performance.now();
+        const dt = Math.max(now - dragState.lastT, 1);
+        const dx = event.clientX - dragState.startX;
+        const dy = event.clientY - dragState.startY;
+        dragState.velocityX = (event.clientX - dragState.lastX) / dt;
+        dragState.lastX = event.clientX;
+        dragState.lastT = now;
+
+        gsap.set(cardEl, {
+          x: dx,
+          y: dy * 0.18,
+          rotation: dx * 0.07,
+        });
+        setStampOpacity(cardEl, dx);
+      };
+
+      const onPointerUp = (event) => {
+        if (!dragState || event.pointerId !== dragState.pointerId) return;
+        const dx = event.clientX - dragState.startX;
+        const velocity = dragState.velocityX;
+        dragState = null;
+
+        const goRight = dx > SWIPE_THRESHOLD || velocity > SWIPE_VELOCITY;
+        const goLeft = (dx < -SWIPE_THRESHOLD || velocity < -SWIPE_VELOCITY) && deckIndex > 0;
+
+        if (goRight) {
+          flyAway(cardEl, 1);
+          return;
+        }
+        if (goLeft) {
+          flyAway(cardEl, -1);
+          return;
+        }
+
+        gsap.to(cardEl, {
+          x: 0,
+          y: 0,
+          rotation: 0,
+          duration: 0.45,
+          ease: "elastic.out(1, 0.55)",
+        });
+        gsap.to(cardEl.querySelectorAll(".swipe-stamp"), {
+          opacity: 0,
+          duration: 0.2,
+        });
+      };
+
+      cardEl.addEventListener("pointerdown", onPointerDown);
+      cardEl.addEventListener("pointermove", onPointerMove);
+      cardEl.addEventListener("pointerup", onPointerUp);
+      cardEl.addEventListener("pointercancel", onPointerUp);
+    }
+
+    function flyAway(cardEl, direction) {
+      if (animating) return;
+      animating = true;
+      updateNav();
+      cardEl.classList.add("card--busy");
+
+      const willReshuffle = direction > 0 && deckIndex >= deck.length - 1;
+      const under = willReshuffle ? null : prepareUnderForDirection(direction);
+
+      const stamp = cardEl.querySelector(
+        direction > 0 ? ".swipe-stamp--next" : ".swipe-stamp--back"
+      );
+      gsap.to(stamp, { opacity: 1, duration: 0.1 });
+
+      if (under) {
+        gsap.to(under, {
+          scale: 1,
+          y: 0,
+          opacity: 1,
+          duration: 0.28,
+          ease: "power2.out",
+        });
+      }
+
+      const flyX = direction * (window.innerWidth * 1.15);
+      gsap.to(cardEl, {
+        x: flyX,
+        y: direction * 24,
+        rotation: direction * 28,
+        opacity: 0.2,
+        duration: 0.32,
+        ease: "power2.in",
+        onComplete: () => {
+          if (direction > 0) advanceDeck();
+          else retreatDeck();
+
+          if (willReshuffle) {
+            // 1周シャッフル時だけ全描画
+            animating = false;
+            renderCard();
+            return;
+          }
+
+          promoteUnder(cardEl);
+        },
+      });
+    }
+
+    function advanceDeck() {
+      if (deckIndex < deck.length - 1) {
+        deckIndex += 1;
+        return;
+      }
+      initDeck();
+    }
+
+    function retreatDeck() {
+      if (deckIndex === 0) return;
+      deckIndex -= 1;
+    }
+
+    function goPrev() {
+      if (!cards.length || deckIndex === 0 || animating) return;
+      const cardEl = stage.querySelector(".card--current");
+      if (!cardEl) return;
+      flyAway(cardEl, -1);
+    }
+
+    function goNext() {
+      if (!cards.length || animating) return;
+      const cardEl = stage.querySelector(".card--current");
+      if (!cardEl) return;
+      flyAway(cardEl, 1);
     }
 
     function showError(message) {
+      setupOverlay.classList.add("hidden");
       stage.innerHTML = `
         <div class="error-panel">
           <p>${escapeHtml(message)}</p>
-          <code>${CSV_URL}</code>
         </div>
       `;
-      status.textContent = "スプレッドシートの共有設定を確認してください";
     }
 
-    async function loadCards() {
-      status.textContent = "スプレッドシートから取得中…";
+    function loadSavedIncludedUsers() {
+      try {
+        const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || "null");
+        if (Array.isArray(saved)) return new Set(saved);
+      } catch {}
+      return null;
+    }
+
+    function saveIncludedUsers() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify([...includedUsers]));
+    }
+
+    function filterQuestions() {
+      return allQuestions.filter((q) => {
+        if (!q.author) return true;
+        return includedUsers.has(q.author);
+      });
+    }
+
+    function getCheckedUserNames() {
+      return [...userList.querySelectorAll('input[type="checkbox"]:checked')].map((el) => el.value);
+    }
+
+    function updateSetupMeta() {
+      if (!users.length || !allQuestions.length) {
+        setupMeta.textContent = "";
+        return;
+      }
+      const checked = new Set(getCheckedUserNames());
+      const count = allQuestions.filter((q) => q.author && checked.has(q.author)).length;
+      setupMeta.textContent = `全${count}問`;
+    }
+
+    function bindSetupCheckboxes() {
+      userList.querySelectorAll('input[type="checkbox"]').forEach((el) => {
+        el.addEventListener("change", updateSetupMeta);
+      });
+    }
+
+    function renderSetup() {
+      userList.innerHTML = users.map((name) => `
+        <label class="user-item">
+          <input type="checkbox" value="${escapeHtml(name)}" ${includedUsers.has(name) ? "checked" : ""} />
+          <span>${escapeHtml(name)}</span>
+        </label>
+      `).join("");
+
+      if (!users.length) {
+        userList.innerHTML = `<p style="margin:0;color:#888;font-size:14px;">ユーザーがまだいません。<a href="edit.html" style="color:#f5c400">編集ページ</a>から追加してください。</p>`;
+        startBtn.disabled = true;
+        setupMeta.textContent = "";
+      } else {
+        startBtn.disabled = false;
+        bindSetupCheckboxes();
+        updateSetupMeta();
+      }
+    }
+
+    function startQuestionsPrefetch() {
+      questionsPrefetchPromise = prefetchQuestions()
+        .then((questions) => {
+          allQuestions = questions;
+          updateSetupMeta();
+          return questions;
+        })
+        .catch((error) => {
+          console.warn("問題の裏読みに失敗", error);
+          return [];
+        });
+    }
+
+    async function ensureQuestionsLoaded() {
+      if (allQuestions.length) return allQuestions;
+      if (questionsPrefetchPromise) {
+        allQuestions = await questionsPrefetchPromise;
+        if (allQuestions.length) return allQuestions;
+      }
+      allQuestions = await loadQuestionsOnly();
+      return allQuestions;
+    }
+
+    async function startGame() {
+      const checked = [...userList.querySelectorAll('input[type="checkbox"]:checked')].map((el) => el.value);
+      if (!checked.length) {
+        alert("出題する人を1人以上選んでください");
+        return;
+      }
+
+      includedUsers = new Set(checked);
+      saveIncludedUsers();
+
+      startBtn.disabled = true;
+      const prefetched = allQuestions.length > 0;
+      if (!prefetched) {
+        startBtn.textContent = "読み込み中…";
+        stage.innerHTML = `<div class="loading">問題を読み込み中…</div>`;
+      }
 
       try {
-        const response = await fetch(CSV_URL);
-        if (!response.ok) {
-          throw new Error(`HTTP ${response.status}`);
-        }
-
-        const csv = await response.text();
-        cards = rowsToCards(parseCsv(csv));
+        await ensureQuestionsLoaded();
+        cards = filterQuestions();
 
         if (!cards.length) {
-          throw new Error("有効な問題が見つかりませんでした");
+          alert("選択した人の問題がありません");
+          setupOverlay.classList.remove("hidden");
+          stage.innerHTML = `<div class="loading">ユーザーを選んで開始してください</div>`;
+          return;
         }
 
-        currentIndex = Math.floor(Math.random() * cards.length);
-        shuffleBtn.disabled = false;
-        toggleAnswerBtn.disabled = false;
+        initDeck();
+        setupOverlay.classList.add("hidden");
         prevBtn.disabled = false;
         nextBtn.disabled = false;
-        status.textContent = `${cards.length} 問読み込み完了`;
         renderCard();
       } catch (error) {
-        showError("問題の読み込みに失敗しました。スプレッドシートを「リンクを知っている全員が閲覧可」にしてください。");
+        alert("問題の読み込みに失敗しました");
+        setupOverlay.classList.remove("hidden");
+        stage.innerHTML = `<div class="loading">ユーザーを選んで開始してください</div>`;
+        console.error(error);
+      } finally {
+        startBtn.disabled = false;
+        startBtn.textContent = "開始";
+      }
+    }
+
+    async function init() {
+      stage.innerHTML = `<div class="loading">ユーザーを選んで開始してください</div>`;
+      setupOverlay.classList.remove("hidden");
+      userList.innerHTML = `<p style="margin:0;color:#888;font-size:14px;">読み込み中…</p>`;
+      startBtn.disabled = true;
+
+      try {
+        users = await loadUsersOnly();
+        const saved = loadSavedIncludedUsers();
+        includedUsers = saved && saved.size ? saved : new Set(users);
+        renderSetup();
+        startQuestionsPrefetch();
+      } catch (error) {
+        setupOverlay.classList.add("hidden");
+        showError("ユーザーの読み込みに失敗しました。スプレッドシートを「リンクを知っている全員が閲覧可」にしてください。");
         console.error(error);
       }
     }
 
-    function goPrev() {
-      if (currentIndex > 0) {
-        currentIndex -= 1;
-        renderCard();
-      }
-    }
-
-    function goNext() {
-      if (currentIndex < cards.length - 1) {
-        currentIndex += 1;
-        renderCard();
-      }
-    }
-
-    function reshuffleLayout() {
-      if (!cards.length) return;
-      currentLayout = buildLayout(cards[currentIndex].choices);
-      renderCard();
-    }
-
-    function toggleAnswer() {
-      answerHidden = !answerHidden;
-      toggleAnswerBtn.textContent = answerHidden ? "答えを表示" : "答えを隠す";
-      renderCard();
-    }
+    startBtn.addEventListener("click", startGame);
+    selectAllBtn.addEventListener("click", () => {
+      userList.querySelectorAll('input[type="checkbox"]').forEach((el) => { el.checked = true; });
+      updateSetupMeta();
+    });
 
     prevBtn.addEventListener("click", goPrev);
     nextBtn.addEventListener("click", goNext);
-    shuffleBtn.addEventListener("click", reshuffleLayout);
-    toggleAnswerBtn.addEventListener("click", toggleAnswer);
-
-    stage.addEventListener("touchstart", (event) => {
-      touchStartX = event.changedTouches[0].clientX;
-    }, { passive: true });
-
-    stage.addEventListener("touchend", (event) => {
-      const deltaX = event.changedTouches[0].clientX - touchStartX;
-      if (Math.abs(deltaX) < 48) return;
-      if (deltaX < 0) goNext();
-      else goPrev();
-    }, { passive: true });
 
     document.addEventListener("keydown", (event) => {
-      if (event.key === "ArrowRight") goNext();
-      if (event.key === "ArrowLeft") goPrev();
-      if (event.key === " ") {
+      if (event.key === "ArrowRight" || event.key === " ") {
         event.preventDefault();
-        reshuffleLayout();
+        goNext();
       }
+      if (event.key === "ArrowLeft") goPrev();
     });
 
-    loadCards();
+    init();
   </script>
 </body>
 </html>

@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#000000" />
+  <title>masahoshi 編集</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@500;700;900&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --black: #000;
+      --yellow: #f5c400;
+      --surface: #000;
+      --text-muted: #888;
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
+      --safe-top: env(safe-area-inset-top, 0px);
+    }
+
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+    body {
+      margin: 0;
+      display: flex;
+      justify-content: center;
+      font-family: "Noto Sans JP", sans-serif;
+      background: var(--surface);
+      color: #fff;
+    }
+
+    .app {
+      width: 100%;
+      max-width: 768px;
+      padding:
+        calc(12px + var(--safe-top))
+        12px
+        calc(12px + var(--safe-bottom));
+    }
+
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .header h1 {
+      margin: 0;
+      font-size: 16px;
+      color: var(--yellow);
+    }
+
+    .link-back {
+      color: var(--yellow);
+      font-size: 12px;
+      font-weight: 700;
+      text-decoration: none;
+      border: 1px solid #333;
+      border-radius: 999px;
+      padding: 6px 10px;
+      white-space: nowrap;
+    }
+
+    .panel {
+      background: #111;
+      border: 1px solid #2a2a2a;
+      border-radius: 16px;
+      padding: 16px;
+      margin-bottom: 12px;
+    }
+
+    .panel h2 {
+      margin: 0 0 12px;
+      font-size: 14px;
+      color: var(--yellow);
+    }
+
+    label {
+      display: block;
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+
+    select, input, textarea {
+      width: 100%;
+      border: 1px solid #333;
+      border-radius: 12px;
+      background: #1a1a1a;
+      color: #fff;
+      font: inherit;
+      font-size: 15px;
+      padding: 12px;
+      margin-bottom: 12px;
+    }
+
+    input::placeholder,
+    textarea::placeholder {
+      color: #555;
+    }
+
+    textarea { min-height: 72px; resize: vertical; }
+
+    .input-row {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .input-row input {
+      flex: 1;
+      min-width: 0;
+      margin-bottom: 0;
+      min-height: 48px;
+    }
+
+    .input-row .btn {
+      flex-shrink: 0;
+      min-width: 72px;
+      min-height: 48px;
+      padding-inline: 16px;
+    }
+
+    .btn {
+      appearance: none;
+      border: 0;
+      border-radius: 12px;
+      min-height: 48px;
+      padding: 12px 16px;
+      font: inherit;
+      font-size: 15px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .btn-primary {
+      width: 100%;
+      background: var(--yellow);
+      color: var(--black);
+      margin-top: 4px;
+    }
+
+    .btn-secondary {
+      background: #222;
+      color: var(--yellow);
+      border: 1px solid #333;
+    }
+
+    .question-card {
+      border: 1px solid #2a2a2a;
+      border-radius: 14px;
+      padding: 14px;
+      margin-bottom: 10px;
+      background: #151515;
+    }
+
+    .question-card h3 {
+      margin: 0 0 8px;
+      font-size: 14px;
+      color: var(--yellow);
+    }
+
+    .question-card p {
+      margin: 0 0 6px;
+      font-size: 13px;
+      line-height: 1.5;
+      color: #ddd;
+    }
+
+    .question-actions {
+      margin-top: 10px;
+    }
+
+    .question-actions .btn {
+      width: 100%;
+    }
+
+    .status {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+      min-height: 18px;
+    }
+
+    .status.error { color: #ff8888; }
+    .status.ok { color: #9fd49f; }
+
+    .empty {
+      font-size: 14px;
+      color: var(--text-muted);
+      text-align: center;
+      padding: 24px 12px;
+    }
+
+    .hidden { display: none !important; }
+  </style>
+</head>
+<body>
+  <div class="app">
+  <header class="header">
+    <h1>問題編集</h1>
+    <a class="link-back" href="index.html">← プレイ</a>
+  </header>
+
+  <p class="status" id="status">読み込み中…</p>
+
+  <section class="panel">
+    <h2>編集する人</h2>
+    <label for="authorSelect">名前</label>
+    <select id="authorSelect"></select>
+    <label for="newUserName">新規ユーザー</label>
+    <div class="input-row">
+      <input id="newUserName" type="text" placeholder="名前を入力" />
+      <button class="btn btn-secondary" id="addUserBtn" type="button">追加</button>
+    </div>
+  </section>
+
+  <section class="panel" id="questionForm">
+    <h2 id="formTitle">新しい問題</h2>
+    <label for="questionInput">問題</label>
+    <textarea id="questionInput" placeholder="例: 今いる国は？"></textarea>
+    <label for="answerInput">回答</label>
+    <textarea id="answerInput" placeholder="例: 日本（日本の場合）"></textarea>
+    <label for="choice1">選択肢1</label>
+    <input id="choice1" type="text" placeholder="例: まいるく" />
+    <label for="choice2">選択肢2</label>
+    <input id="choice2" type="text" placeholder="例: わ" />
+    <label for="choice3">選択肢3</label>
+    <input id="choice3" type="text" placeholder="例: に" />
+    <label for="choice4">選択肢4</label>
+    <input id="choice4" type="text" placeholder="例: い" />
+    <button class="btn btn-primary" id="saveBtn" type="button">問題を保存</button>
+    <button class="btn btn-secondary hidden" id="cancelEditBtn" type="button" style="width:100%;margin-top:8px;">編集をやめる</button>
+  </section>
+
+  <section class="panel">
+    <h2>自分の問題一覧</h2>
+    <div id="questionList"></div>
+  </section>
+  </div>
+
+  <script src="config.js"></script>
+  <script src="shared.js"></script>
+  <script>
+    const statusEl = document.getElementById("status");
+    const authorSelect = document.getElementById("authorSelect");
+    const newUserName = document.getElementById("newUserName");
+    const addUserBtn = document.getElementById("addUserBtn");
+    const questionInput = document.getElementById("questionInput");
+    const answerInput = document.getElementById("answerInput");
+    const choiceInputs = [
+      document.getElementById("choice1"),
+      document.getElementById("choice2"),
+      document.getElementById("choice3"),
+      document.getElementById("choice4"),
+    ];
+    const saveBtn = document.getElementById("saveBtn");
+    const cancelEditBtn = document.getElementById("cancelEditBtn");
+    const questionList = document.getElementById("questionList");
+    const formTitle = document.getElementById("formTitle");
+
+    let users = [];
+    let questions = [];
+    let editingRow = null;
+
+    function setStatus(message, type = "") {
+      statusEl.textContent = message;
+      statusEl.className = `status ${type}`.trim();
+    }
+
+    function getSelectedAuthor() {
+      return authorSelect.value;
+    }
+
+    function clearForm() {
+      editingRow = null;
+      questionInput.value = "";
+      answerInput.value = "";
+      choiceInputs.forEach((input) => { input.value = ""; });
+      formTitle.textContent = "新しい問題";
+      saveBtn.textContent = "問題を保存";
+      cancelEditBtn.classList.add("hidden");
+      updateFormState();
+    }
+
+    function fillForm(question) {
+      editingRow = question.row;
+      questionInput.value = question.question;
+      answerInput.value = question.answer;
+      choiceInputs.forEach((input, index) => {
+        input.value = question.choices[index] || "";
+      });
+      formTitle.textContent = "問題を編集";
+      saveBtn.textContent = "更新する";
+      cancelEditBtn.classList.remove("hidden");
+      updateFormState();
+      document.getElementById("questionForm").scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+
+    function renderAuthorSelect() {
+      const current = authorSelect.value;
+      authorSelect.innerHTML = `
+        <option value="">名前を選択</option>
+        ${users.map((name) => `
+          <option value="${escapeHtml(name)}">${escapeHtml(name)}</option>
+        `).join("")}
+      `;
+      authorSelect.value = current && users.includes(current) ? current : "";
+      updateFormState();
+    }
+
+    function getMissingFields() {
+      const missing = [];
+      if (!questionInput.value.trim()) missing.push("問題");
+      if (!answerInput.value.trim()) missing.push("回答");
+      choiceInputs.forEach((input, index) => {
+        if (!input.value.trim()) missing.push(`選択肢${index + 1}`);
+      });
+      return missing;
+    }
+
+    function updateFormState() {
+      const hasAuthor = Boolean(getSelectedAuthor());
+      saveBtn.disabled = !hasAuthor || getMissingFields().length > 0;
+    }
+
+    function renderQuestions() {
+      const author = getSelectedAuthor();
+      const mine = questions.filter((q) => q.author === author);
+
+      if (!author) {
+        questionList.innerHTML = `<div class="empty">名前を選んでください</div>`;
+        return;
+      }
+
+      if (!mine.length) {
+        questionList.innerHTML = `<div class="empty">${escapeHtml(author)} の問題はまだありません</div>`;
+        return;
+      }
+
+      questionList.innerHTML = mine.map((q) => `
+        <article class="question-card">
+          <h3>Q. ${escapeHtml(q.question || "（未設定）")}</h3>
+          <p>A. ${escapeHtml(q.answer || "（未設定）")}</p>
+          <p>${escapeHtml(q.choices.filter(Boolean).join(" / ") || "選択肢なし")}</p>
+          <div class="question-actions">
+            <button class="btn btn-secondary" type="button" data-edit="${q.row}">編集</button>
+          </div>
+        </article>
+      `).join("");
+
+      questionList.querySelectorAll("[data-edit]").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const row = Number(btn.dataset.edit);
+          const question = questions.find((q) => q.row === row);
+          if (question) fillForm(question);
+        });
+      });
+    }
+
+    function applyQuestionLocally(question, wasEditing) {
+      if (wasEditing) {
+        const index = questions.findIndex((q) => q.row === question.row);
+        if (index >= 0) questions[index] = question;
+      } else {
+        questions.push(question);
+      }
+      writeQuestionsCache(questions);
+      renderQuestions();
+    }
+
+    function setSaving(isSaving, label = "保存中…") {
+      addUserBtn.disabled = isSaving;
+      if (isSaving) {
+        saveBtn.dataset.label = saveBtn.textContent;
+        saveBtn.textContent = label;
+        saveBtn.disabled = true;
+        setStatus(label);
+      } else {
+        if (saveBtn.dataset.label) saveBtn.textContent = saveBtn.dataset.label;
+        updateFormState();
+      }
+    }
+
+    function questionFromPayload(payload) {
+      return {
+        row: payload.row,
+        question: payload.question,
+        answer: payload.answer,
+        choices: [...payload.choices],
+        author: payload.author,
+      };
+    }
+
+    async function reloadData() {
+      const [usersData, questionsData] = await Promise.all([
+        loadUsersOnly(),
+        loadQuestionsOnly(),
+      ]);
+      users = usersData;
+      questions = questionsData;
+      renderAuthorSelect();
+      renderQuestions();
+    }
+
+    async function init() {
+      if (!CONFIG.API_URL) {
+        setStatus("問題の保存には GAS の API_URL 設定が必要です。", "error");
+      }
+
+      try {
+        setStatus("読み込み中…");
+        await reloadData();
+        setStatus(`${users.length} 人 / ${questions.length} 問`, "ok");
+      } catch (error) {
+        setStatus(error.message, "error");
+      }
+    }
+
+    [questionInput, answerInput, ...choiceInputs].forEach((input) => {
+      input.addEventListener("input", updateFormState);
+    });
+
+    authorSelect.addEventListener("change", () => {
+      clearForm();
+      renderQuestions();
+      updateFormState();
+    });
+
+    addUserBtn.addEventListener("click", async () => {
+      const name = newUserName.value.trim();
+      if (!name) {
+        setStatus("名前を入力してください", "error");
+        return;
+      }
+
+      try {
+        setSaving(true, "追加中…");
+        const result = await apiPost({ action: "addUser", name });
+        users = result.users || [];
+        newUserName.value = "";
+        renderAuthorSelect();
+        authorSelect.value = name;
+        renderQuestions();
+        updateFormState();
+        setStatus(`ユーザー「${name}」を追加しました`, "ok");
+      } catch (error) {
+        setStatus(error.message, "error");
+      } finally {
+        setSaving(false);
+      }
+    });
+
+    saveBtn.addEventListener("click", async () => {
+      const author = getSelectedAuthor();
+      if (!author) {
+        setStatus("名前を選んでください", "error");
+        return;
+      }
+
+      const payload = {
+        action: editingRow ? "updateQuestion" : "addQuestion",
+        author,
+        row: editingRow,
+        question: questionInput.value.trim(),
+        answer: answerInput.value.trim(),
+        choices: choiceInputs.map((input) => input.value.trim()),
+      };
+
+      const missing = getMissingFields();
+      if (missing.length) {
+        setStatus(`${missing.join("・")}を入力してください`, "error");
+        return;
+      }
+
+      try {
+        const wasEditing = Boolean(editingRow);
+        setSaving(true);
+        const result = await apiPost(payload);
+        const question = result.question || questionFromPayload(payload);
+        applyQuestionLocally(question, wasEditing);
+        clearForm();
+        setStatus(wasEditing ? "更新しました" : "追加しました", "ok");
+      } catch (error) {
+        setStatus(error.message, "error");
+      } finally {
+        setSaving(false);
+      }
+    });
+
+    cancelEditBtn.addEventListener("click", clearForm);
+
+    init();
+  </script>
+</body>
+</html>

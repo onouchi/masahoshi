@@ -1,0 +1,13 @@
+{
+  "name": "masahoshi",
+  "private": true,
+  "scripts": {
+    "predeploy": "mkdir -p public && cp index.html edit.html config.js shared.js public/",
+    "dev": "wrangler dev --assets ./public",
+    "deploy": "npm run predeploy && wrangler deploy",
+    "deploy:pages": "npm run predeploy && wrangler pages deploy public --project-name=masahoshi"
+  },
+  "devDependencies": {
+    "wrangler": "^4.127.1"
+  }
+}

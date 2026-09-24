@@ -26,16 +26,14 @@ function writeQuestionsCache(questions) {
 }
 
 async function fetchQuestionsFresh() {
-  if (CONFIG.API_URL) {
-    try {
-      const data = await loadApiAction("getQuestions");
-      return data.questions || [];
-    } catch {
-      const data = await loadDataFromApi();
-      return data.questions || [];
-    }
+  try {
+    return await loadQuestionsFromCsv();
+  } catch (error) {
+    console.warn("問題CSV取得失敗、APIにフォールバック", error);
+    if (!CONFIG.API_URL) throw error;
+    const data = await loadDataFromApi();
+    return data.questions || [];
   }
-  return loadQuestionsFromCsv();
 }
 
 async function loadQuestionsOnly(options = {}) {
@@ -227,7 +225,7 @@ async function loadUsersFromCsv() {
 }
 
 async function loadQuestionsFromCsv() {
-  const url = `https://docs.google.com/spreadsheets/d/${CONFIG.SHEET_ID}/export?format=csv&gid=${CONFIG.QUESTIONS_GID}`;
+  const url = `https://docs.google.com/spreadsheets/d/${CONFIG.SHEET_ID}/gviz/tq?tqx=out:csv&gid=${CONFIG.QUESTIONS_GID}&headers=1`;
   return rowsToQuestions(await fetchCsv(url));
 }
 
